@@ -1,0 +1,88 @@
+/* TXSE Auction Viewer stylesheet, copied verbatim from https://auctions.txse.com/ (public page) so the new tab sits in the real shell. */
+
+/* The palette, type and masthead are auction-viewer-ui's (its index.html), copied rather than shared:
+   that page ships through vite, this one is a file. A third page is when to extract. */
+:root{
+  color-scheme:dark;
+  --page:#0a1929;--surface:#0b1d30;--surface-2:#132f4c;
+  --ink:#f0f4f8;--ink-2:#b0c4d8;--muted:#6b8299;
+  --grid:rgba(91,163,200,.34);--grid-strong:rgba(91,163,200,.65);--border:rgba(91,163,200,.18);--baseline:rgba(91,163,200,.25);
+  --good:#66bb6a;--warning:#ffb74d;--accent:#7ec8e3;--blue:#4a9cb8;
+  --flash:rgba(126,200,227,.28);
+  --font-ui:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:rgba(91,163,200,.2) transparent}
+html,body{margin:0;padding:0;background:var(--page);color:var(--ink);font-family:var(--font-ui);-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;min-height:100vh}
+header.masthead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);position:relative}
+header.masthead::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;opacity:.4;background:linear-gradient(to right,transparent,#5ab4d4,transparent)}
+.brand{display:flex;align-items:center;gap:12px;white-space:nowrap}
+.brand .logo{background:#fff;padding:5px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.3);display:flex}
+.brand .logo img{height:22px;width:auto;display:block}
+header.masthead h1{font-size:17px;margin:0;font-weight:700;letter-spacing:.01em;line-height:1.2}
+.status{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);white-space:nowrap}
+.status .live-word{font-weight:700;letter-spacing:.04em;font-size:11px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.live-dot.green{background:var(--good);animation:dot-pulse 1.4s ease-in-out infinite}
+.live-dot.amber{background:var(--warning)}
+.session-date{font-size:12px;color:var(--ink-2);margin-right:4px}
+@keyframes dot-pulse{0%,100%{box-shadow:0 0 0 0 rgba(12,163,12,.55)}50%{box-shadow:0 0 0 5px rgba(12,163,12,0)}}
+.as-of{font-size:11px;color:var(--muted)}
+.tabs{display:flex;padding:0 12px;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-1px;padding:10px 16px;font:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.tab:hover{color:var(--ink-2)}
+.tab.active{color:var(--accent);border-bottom-color:#5ab4d4}
+.tab:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.wrap{flex:1;overflow:auto;min-height:0;padding:12px 16px}
+/* Fixed layout with every column's width declared below: a cell's width is then a property of the column,
+   never of its content, so a value changing or a highlight landing moves nothing. tabular-nums on the
+   numeric cells does the same within a cell. */
+table{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;background:var(--surface);border:1px solid var(--border);border-radius:8px}
+/* The mockup's grid: a line on every cell's right and bottom edges, a stronger one around the header, down the
+   symbol column and between one symbol's rows and the next, so a two-row group reads as one record. */
+th,td{padding:5px 10px;border-right:1px solid var(--grid);border-bottom:1px solid var(--grid);font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--surface);transition:background-color 1s ease-out}
+thead th{position:sticky;top:0;z-index:3;background:var(--surface-2);text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:7px 10px;border-bottom:1px solid var(--grid-strong);white-space:normal;line-height:1.2;vertical-align:bottom}
+/* On the class, not :last-child: a symbol's second row ends at First shown, and :last-child stripped that
+   cell's border on every other row. */
+.end{border-right:0}
+.sym{position:sticky;left:36px;z-index:2;font-weight:700;color:var(--ink);border-right:1px solid var(--grid-strong)}
+thead th.sym{z-index:4;background:var(--surface-2)}
+/* The pin column and the chooser are auction-viewer-ui's, same classes, trimmed to this palette. */
+.pin-cell{position:sticky;left:0;z-index:2;padding:0 0 0 6px!important;cursor:pointer}
+thead th.pin-cell{z-index:4;background:var(--surface-2)}
+.pin-btn{display:block;width:100%;height:100%;min-height:30px;background:none;border:none;cursor:pointer;padding:0;font-size:14px;line-height:1;color:var(--border);border-radius:0}
+/* Hover is a hint in grey, not the pinned yellow: an unpin under a resting cursor has to look unpinned at once. */
+tr:hover .pin-btn{color:var(--muted)}
+.pin-cell:hover .pin-btn{color:var(--ink-2)}
+.pin-cell .pin-btn.pinned{color:var(--warning)} /* outranks the hover rules: a pinned star is yellow under the cursor too */
+.fp-reset{background:none;border:0;color:var(--accent);font:inherit;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:6px 10px;border-radius:6px;cursor:pointer}
+.fp-reset:hover{background:rgba(90,180,212,.1);color:#9cd8f0}
+.fp-reset[disabled]{opacity:.4;cursor:default}
+.cols-btn{align-self:center}
+.search{margin-left:auto;align-self:center;width:150px;padding:5px 8px;font:inherit;font-size:12px;color:var(--ink);background:var(--page);border:1px solid var(--border);border-radius:6px}
+.search::placeholder{color:var(--muted)}
+.search:focus-visible{outline:2px solid var(--blue);outline-offset:-1px}
+.col-menu{position:fixed;z-index:30;min-width:170px;display:grid;gap:4px;padding:10px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.col-menu[hidden]{display:none}
+.col-hint{font-size:11px;color:var(--muted);margin-bottom:4px}
+.col-opt{display:flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap;padding:2px 4px;border-radius:4px;border-top:2px solid transparent;border-bottom:2px solid transparent}
+.col-opt label{display:flex;align-items:center;gap:8px;cursor:pointer}
+.col-grip{color:var(--muted);cursor:grab;font-size:11px;letter-spacing:-3px;user-select:none}
+.col-opt.dragging{opacity:.4}
+.col-opt.drop-before{border-top-color:var(--accent)}
+.col-opt.drop-after{border-bottom-color:var(--accent)}
+.col-actions{display:flex;gap:4px;margin-top:6px}
+tr.up td{border-top:1px solid var(--grid-strong)}
+.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--font-mono);font-size:11.5px}
+.np{color:var(--muted);text-align:center}
+tbody td.fl{background:var(--flash);transition:none}
+.empty{color:var(--muted);text-align:center;padding:60px 20px;font-size:14px}
+footer{padding:6px 16px;border-top:1px solid var(--border);background:var(--surface);font-size:12px;color:var(--muted)}
+footer p{margin:0}
+footer .legal{font-style:italic}
+.guide-note{margin:16px 0 4px;padding:10px 14px;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:4px;background:var(--surface-2);font-size:14px;color:var(--ink)}
+.guide-link{font-weight:700;color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.guide-link:hover{text-decoration:underline}
+.guide-link:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:2px}
+@media (prefers-reduced-motion:reduce){th,td{transition:none}tbody td.fl{background:var(--surface)}.live-dot.green{animation:none}}

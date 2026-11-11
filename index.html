@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TXSE Auction Viewer · Band Calibration</title>
+<link rel="icon" type="image/svg+xml" href="assets/txse-logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="viewer.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="brand"><span class="logo"><img src="assets/txse-logo.svg" alt="TXSE"></span><h1>TXSE Auction Viewer</h1></div>
+  <span class="status"><span id="date" class="session-date"></span><span class="live-dot grey"></span><span class="live-word">OFFLINE</span><span id="asOf" class="as-of"></span></span>
+</header>
+<nav class="tabs" role="tablist" aria-label="auction type">
+  <button class="tab" type="button" role="tab" aria-selected="false" disabled>Open/Close</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" disabled>Halt</button>
+  <button class="tab active" type="button" role="tab" aria-selected="true">Band Calibration</button>
+  <input id="search" class="search" type="search" placeholder="Search symbol" aria-label="search symbol" autocomplete="off" spellcheck="false">
+  <span class="seg" role="group" aria-label="target outside-band rate">
+    <span class="seg-label">Target</span>
+    <button type="button" class="fp-reset seg-btn" data-alpha="0.01">1%</button>
+    <button type="button" class="fp-reset seg-btn" data-alpha="0.02">2%</button>
+    <button type="button" class="fp-reset seg-btn" data-alpha="0.05">5%</button>
+  </span>
+  <button id="csvBtn" type="button" class="fp-reset cols-btn">Export CSV</button>
+</nav>
+<div class="wrap">
+  <section class="tiles" id="tiles" aria-label="summary"></section>
+
+  <h2 class="sec">Participation Band parameters by method <span class="sec-sub" id="paramSub"></span></h2>
+  <table class="grid2" aria-label="Parameters by method">
+    <colgroup><col style="width:120px"><col style="width:100px"><col style="width:110px"><col style="width:90px"><col style="width:100px"><col style="width:105px"><col style="width:85px"><col style="width:95px"><col style="width:95px"><col style="width:120px"><col style="width:130px"><col style="width:120px"></colgroup>
+    <thead><tr><th class="sym">Method</th><th>Setting</th><th>k / Width</th><th>MPV floor</th><th>Basis point floor</th><th>Max half-width</th><th>Auctions</th><th>Outside band</th><th>Outside rate</th><th>Mean half-width (bps)</th><th>Late shares priced out</th><th class="end">Dislocation when outside (bps)</th></tr></thead>
+    <tbody id="methodBody"></tbody>
+  </table>
+
+  <div class="pair">
+    <section class="card">
+      <div class="card-h"><span class="card-t">Outside-band rate vs band width</span><span class="card-s" id="frontierSub"></span></div>
+      <svg id="frontier" class="chart" viewBox="0 0 560 300" role="img" aria-label="Outside-band rate against mean half-width for each method"></svg>
+      <div class="legend" id="frontierLegend"></div>
+    </section>
+    <section class="card">
+      <div class="card-h"><span class="card-t">Session replay</span>
+        <select id="replaySel" class="search sel" aria-label="session"></select></div>
+      <svg id="replay" class="chart" viewBox="0 0 560 300" role="img" aria-label="Trades in the observation window with production and calibrated bands"></svg>
+      <div class="legend" id="replayLegend"></div>
+    </section>
+  </div>
+
+  <h2 class="sec">By symbol <span class="sec-sub">Production vs calibrated, evaluation sessions only</span></h2>
+  <table id="symGrid" class="grid2" aria-label="By symbol">
+    <colgroup><col style="width:36px"><col style="width:90px"><col style="width:90px"><col style="width:170px"><col style="width:100px"><col style="width:95px"><col style="width:95px"><col style="width:130px"><col style="width:140px"><col style="width:140px"></colgroup>
+    <thead><tr><th class="pin-cell"></th><th class="sym">Symbol</th><th>Kind</th><th>Method (Trade / Quote / Ref)</th><th>Setting</th><th>Outside band</th><th>Outside rate</th><th>Mean half-width (bps)</th><th>Late shares priced out</th><th class="end">Worst session</th></tr></thead>
+    <tbody id="symBody"></tbody>
+  </table>
+  <div id="empty" class="empty" hidden></div>
+
+  <div class="pair">
+    <section class="card">
+      <div class="card-h"><span class="card-t">Circular changes</span><span class="card-s">notice per Rule 11.022(a)(20)</span></div>
+      <table class="grid2 compact" aria-label="Calibration log">
+        <thead><tr><th>Announced</th><th>Parameter</th><th>From</th><th>To</th><th>Notice</th><th class="end">Effective</th></tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </section>
+    <section class="card">
+      <div class="card-h"><span class="card-t">Public Auction Viewer, Tue Nov 10</span><span class="card-s" id="snapSub"></span></div>
+      <table class="grid2 compact" aria-label="Nov 10 auctions outside the final published band">
+        <thead><tr><th>Symbol</th><th>Open/Close</th><th>Lower band</th><th>Upper band</th><th>Official price</th><th>Executed shares</th><th class="end">Outside by</th></tr></thead>
+        <tbody id="snapBody"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <aside class="guide-note">Bands follow the <a class="guide-link" href="https://download.web.txse.com/documents/TXSE_Participation_Bands_Circular.pdf" target="_blank" rel="noopener">TXSE Auction Participation Bands circular</a> (Sep 9, 2026): median(P) ± k × MAD(P) over a 5-minute window, Trade then Quote then Reference Price Method, MPV and basis-point floors, 2.50% maximum. Calibration searches only the permissible ranges and recalibrates weekly on the trailing 30 sessions.</aside>
+</div>
+<footer>
+  <p class="legal">Unofficial concept demo by Mohith Gajjela. Not affiliated with TXSE. Synthetic data, except the Nov 10 panel (public TXSE Auction Viewer data).</p>
+</footer>
+<div id="tip" class="tip" hidden></div>
+<script src="core/bands.js"></script>
+<script src="data/snapshot.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
