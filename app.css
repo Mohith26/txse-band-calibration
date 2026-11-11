@@ -12,10 +12,12 @@
 .tile{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px 12px;position:relative;overflow:hidden}
 .tile::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;opacity:.5;background:linear-gradient(to right,transparent,#5ab4d4,transparent)}
 .tile-l{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
-.tile-v{display:flex;align-items:baseline;gap:8px;margin-top:6px;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.tile-v{white-space:nowrap;display:flex;align-items:baseline;gap:8px;margin-top:6px;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 .tile-v .from{font-size:13px;color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(107,130,153,.6)}
 .tile-v .arrow{color:var(--muted);font-size:12px}
 .tile-v .to{font-size:22px;color:var(--ink);font-weight:500}
+.tile-v .to.sm{font-size:17px}
+.tile-v .sm ~ *{}
 .tile-n{font-size:11.5px;color:var(--ink-2);margin-top:4px}
 .good{color:var(--good)}
 .warn{color:var(--warning)}

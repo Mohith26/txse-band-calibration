@@ -44,9 +44,9 @@
       tile('Auctions clearing outside the final band', pct(p.missRate), pct(c.missRate), num(p.misses) + ' → ' + num(c.misses) + ' of ' + num(p.n) + ' closing auctions · target ' + pct(state.alpha), c.missRate <= p.missRate ? 'good' : 'warn') +
       tile('Mean band half-width', p.meanHalfBps.toFixed(1) + ' bps', c.meanHalfBps.toFixed(1) + ' bps', (w <= 0 ? Math.abs(w * 100).toFixed(0) + '% narrower' : (w * 100).toFixed(0) + '% wider') + ' on average across all methods') +
       tile('Late shares priced out by the band', num(p.pricedOut), num(c.pricedOut), (cut >= 0 ? (cut * 100).toFixed(0) + '% fewer' : Math.abs(cut * 100).toFixed(0) + '% more') + ' LOC.L shares that were marketable at the unconstrained price', cut >= 0 ? 'good' : 'warn') +
-      tile('Outside rate by method', ['trade', 'quote', 'reference'].map(function (m) { return pct(A.methods[m].production.missRate, 0); }).join(' / '),
-        ['trade', 'quote', 'reference'].map(function (m) { return pct(A.methods[m].calibrated.missRate, 0); }).join(' / '),
-        'Trade / Quote / Reference: one k = 5.0 gives uneven protection');
+      tile('Outside rate by method (%)', ['trade', 'quote', 'reference'].map(function (m) { return (A.methods[m].production.missRate * 100).toFixed(1); }).join('/'),
+        ['trade', 'quote', 'reference'].map(function (m) { return (A.methods[m].calibrated.missRate * 100).toFixed(1); }).join(' / '),
+        'Trade / Quote / Reference: one k = 5.0 gives uneven protection', 'sm');
   }
 
   // ------------------------------------------------------------ parameters by method
